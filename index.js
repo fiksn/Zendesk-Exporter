@@ -329,7 +329,7 @@ const downloadAttachments = async function(cursor = false) {
               responseType: 'arraybuffer',
             };
             try {
-              let response = await axios.get(attachment.content_url, config);
+              let response = await requestWithRateLimit(attachment.content_url, config);
 
               //console.log(response.data);
   
@@ -393,7 +393,7 @@ const getViews = async function(next_page = false, items = []) {
         },
     };
 
-    requestWithRateLimit.axios(config).then(async function (response) {
+    requestWithRateLimit(config).then(async function (response) {
 
       items = [...items, ...response.data.views];
 
