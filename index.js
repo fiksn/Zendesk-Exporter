@@ -11,6 +11,7 @@ const headers = {
 };
 
 const exportFolder = './exported/';
+const startTime = process.env.START_TIME || '0';
 
 if (!fs.existsSync(exportFolder)) {
   fs.mkdirSync(exportFolder);
@@ -57,7 +58,7 @@ const getTickets = async (cursor = false) => {
     headers: headers,
       params: {
         'cursor': (cursor) ? cursor : '',
-        'start_time': '0',
+        'start_time': startTime,
       },
   };
 
@@ -251,7 +252,7 @@ const getUsers = function(cursor = false) {
     headers: headers,
       params: {
         'cursor': (cursor) ? cursor : '',
-        'start_time': '0',
+        'start_time': startTime,
       },
   };
 
