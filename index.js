@@ -22,24 +22,24 @@ if (!fs.existsSync(exportFolder + 'attachments/')) {
     console.log(`Folder "${exportFolder}attachments" created successfully.`);
 }
 
-
 const requestWithRateLimit = async (config) => {
-  try {
-    const response = await axios(config);
-    if (response.status === 429) {
-      const secondsToWait = Number(response.headers["retry-after"]);
-      await new Promise(resolve => setTimeout(resolve, (secondsToWait + 1) * 1000));
-      return requestWithRateLimit(config);
-    }
-    return response;
-  } catch (err) {
-    if (err.response && err.response.status === 429) {
-        const secondsToWait = Number(err.response.headers["retry-after"]);
+  const retryStatusCodes = [429, 500, 502, 503, 504];
+  const defaultRetryAfterSeconds = 10;
+
+  while (true) {
+    try {
+      const response = await axios(config);
+      return response;
+    } catch (err) {
+      const status = err.response ? err.response.status : null;
+      if (retryStatusCodes.includes(status)) {
+        const retryAfter = err.response.headers["retry-after"];
+        const secondsToWait = retryAfter ? Number(retryAfter) : defaultRetryAfterSeconds;
         await new Promise(resolve => setTimeout(resolve, (secondsToWait + 1) * 1000));
-        return requestWithRateLimit(config);
-    } else {
-      console.log("Unhandled exception");
-      throw err;
+      } else {
+        console.log("Unhandled exception");
+        throw err;
+      }
     }
   }
 }
