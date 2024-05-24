@@ -10,7 +10,7 @@ const headers = {
     'Authorization': 'Basic ' + Buffer.from(`${process.env.ZENDESK_EMAIL}/token:${process.env.ZENDESK_TOKEN}`).toString('base64'), // Base64 encoded "username:password"
 };
 
-const exportFolder = './exported/';
+const exportFolder = process.env.EXPORTED_DIR || './exported/';
 const startTime = process.env.START_TIME || '0';
 
 if (!fs.existsSync(exportFolder)) {
@@ -339,8 +339,8 @@ const downloadAttachments = async function(cursor = false) {
                 //console.log('The file is created');
               });
             } catch (e) {
-              console.log('error, skipping attachment id', attachment.id, 'Error', e.code, e.response.status);
-              logError(`Skipping attachment id ${attachment.id} Error: ${e.code} ${e.response.status}`);
+              console.log('error, skipping attachment id', attachment.id, 'Error', e.code, e.response ? e.response.status : 'No response');
+              logError(`Skipping attachment id ${attachment.id} Error: ${e.code} ${e.response ? e.response.status : 'No response'}`);
             }
 
 
